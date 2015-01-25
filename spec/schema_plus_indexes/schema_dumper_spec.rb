@@ -44,35 +44,33 @@ describe "Schema dump" do
     class ::Comment < ActiveRecord::Base ; end
   end
 
-  it "should include index definition" do
+  it "should include in-table index definition" do
     with_index Post, :user_id do
-      expect(dump_posts).to match(to_regexp(%q{t.index ["user_id"]}))
+      expect(dump_posts).to match(/"user_id",.*index:/)
+    end
+  end
+
+  it "should not include add_index statement" do
+    with_index Post, :user_id do
+      expect(dump_posts).not_to match(%r{add_index.*user_id})
     end
   end
 
   it "should include index name" do
     with_index Post, :user_id, :name => "custom_name" do
-      expect(dump_posts).to match(to_regexp(%q{t.index ["user_id"], :name => "custom_name"}))
+      expect(dump_posts).to match(/"user_id",.*index:.*name: "custom_name"/)
     end
   end
 
   it "should define unique index" do
     with_index Post, :user_id, :name => "posts_user_id_index", :unique => true do
-      expect(dump_posts).to match(to_regexp(%q{t.index ["user_id"], :name => "posts_user_id_index", :unique => true}))
-    end
-  end
-
-  it "should sort indexes" do
-    with_index Post, :user_id do
-      with_index Post, :short_id do
-        expect(dump_posts).to match(/on_short_id.+on_user_id/m)
-      end
+      expect(dump_posts).to match(/"user_id",.*index:.*name: "posts_user_id_index", unique: true/)
     end
   end
 
   it "should include index order", :mysql => :skip do
     with_index Post, [:user_id, :first_comment_id, :short_id], :order => { :user_id => :asc, :first_comment_id => :desc } do
-      expect(dump_posts).to match(%r{t.index \["user_id", "first_comment_id", "short_id"\],.*:order => {"user_id" => :asc, "first_comment_id" => :desc, "short_id" => :asc}})
+      expect(dump_posts).to match(/"user_id".*index: {.*with: \["first_comment_id", "short_id"\],.*order: {"user_id"=>:asc, "first_comment_id"=>:desc, "short_id"=>:asc}}/)
     end
   end
 
@@ -80,20 +78,20 @@ describe "Schema dump" do
 
     it "should define case insensitive index" do
       with_index Post, [:body, :string_no_default], :case_sensitive => false do
-        expect(dump_posts).to match(to_regexp(%q{t.index ["body", "string_no_default"], :name => "index_posts_on_body_and_string_no_default", :case_sensitive => false}))
+        expect(dump_posts).to match(/"body".*index: {.*with:.*string_no_default.*case_sensitive: false/)
       end
     end
 
     it "should define index with type cast" do
       with_index Post, [:integer_col], :name => "index_with_type_cast", :expression => "LOWER(integer_col::text)" do
-        expect(dump_posts).to match(to_regexp(%q{t.index :name => "index_with_type_cast", :expression => "lower((integer_col)::text)"}))
+        expect(dump_posts).to include(%q{t.index name: "index_with_type_cast", expression: "lower((integer_col)::text)"})
       end
     end
 
 
     it "should define case insensitive index with mixed ids and strings" do
       with_index Post, [:user_id, :str_short, :short_id, :body], :case_sensitive => false do
-        expect(dump_posts).to match(to_regexp(%q{t.index ["user_id", "str_short", "short_id", "body"], :name => "index_posts_on_user_id_and_str_short_and_short_id_and_body", :case_sensitive => false}))
+        expect(dump_posts).to match(/user_id.*index: {.* with: \["str_short", "short_id", "body"\], case_sensitive: false}/)
       end
     end
 
@@ -101,52 +99,58 @@ describe "Schema dump" do
       col_name = "#{col_type}_col"
       it "should define case insensitive index that includes an #{col_type}" do
         with_index Post, [:user_id, :str_short, col_name, :body], :case_sensitive => false do
-          expect(dump_posts).to match(to_regexp(%Q!t.index ["user_id", "str_short", "#{col_name}", "body"], :name => "index_posts_on_user_id_and_str_short_and_#{col_name}_and_body", :case_sensitive => false!))
+          expect(dump_posts).to match(/user_id.*index: {.* with: \["str_short", "#{col_name}", "body"\], case_sensitive: false}/)
         end
       end
     end
 
     it "should define where" do
       with_index Post, :user_id, :name => "posts_user_id_index", :where => "user_id IS NOT NULL" do
-        expect(dump_posts).to match(to_regexp(%q{t.index ["user_id"], :name => "posts_user_id_index", :where => "(user_id IS NOT NULL)"}))
+        expect(dump_posts).to match(/user_id.*index: {.*where: "\(user_id IS NOT NULL\)"}/)
       end
     end
 
     it "should define expression" do
       with_index Post, :name => "posts_freaky_index", :expression => "USING hash (least(id, user_id))" do
-        expect(dump_posts).to match(to_regexp(%q{t.index :name => "posts_freaky_index", :using => "hash", :expression => "LEAST(id, user_id)"}))
+        expect(dump_posts).to include(%q{t.index name: "posts_freaky_index", using: :hash, expression: "LEAST(id, user_id)"})
       end
     end
 
     it "should define operator_class" do
       with_index Post, :body, :operator_class => 'text_pattern_ops' do
-        expect(dump_posts).to match(to_regexp(%q{t.index ["body"], :name => "index_posts_on_body", :operator_class => {"body" => "text_pattern_ops"}}))
+        expect(dump_posts).to match(/body.*index:.*operator_class: "text_pattern_ops"/)
+      end
+    end
+
+    it "should define multi-column operator classes " do
+      with_index Post, [:body, :string_no_default], :operator_class => {body: 'text_pattern_ops', string_no_default: 'varchar_pattern_ops' } do
+        expect(dump_posts).to match(/body.*index:.*operator_class: {"body"=>"text_pattern_ops", "string_no_default"=>"varchar_pattern_ops"}/)
       end
     end
 
     it "should dump unique: true with expression (Issue #142)" do
       with_index Post, :name => "posts_user_body_index", :unique => true, :expression => "BTRIM(LOWER(body))" do
-        expect(dump_posts).to match(%r{#{to_regexp(%q{t.index :name => "posts_user_body_index", :unique => true, :expression => "btrim(lower(body))"})}$})
+        expect(dump_posts).to include(%q{t.index name: "posts_user_body_index", unique: true, expression: "btrim(lower(body))"})
       end
     end
 
 
     it "should not define :case_sensitive => false with non-trivial expression" do
       with_index Post, :name => "posts_user_body_index", :expression => "BTRIM(LOWER(body))" do
-        expect(dump_posts).to match(%r{#{to_regexp(%q{t.index :name => "posts_user_body_index", :expression => "btrim(lower(body))"})}$})
+        expect(dump_posts).to include(%q{t.index name: "posts_user_body_index", expression: "btrim(lower(body))"})
       end
     end
 
     it "should define using" do
       with_index Post, :name => "posts_body_index", :expression => "USING hash (body)" do
-        expect(dump_posts).to match(to_regexp(%q{t.index ["body"], :name => "posts_body_index", :using => "hash"}))
+        expect(dump_posts).to match(/body.*index:.*using: :hash/)
       end
     end
 
     it "should not include index order for non-ordered index types" do
       with_index Post, :user_id, :using => :hash do
-        expect(dump_posts).to match(to_regexp(%q{t.index ["user_id"], :name => "index_posts_on_user_id", :using => "hash"}))
-        expect(dump_posts).not_to match(%r{:order})
+        expect(dump_posts).to match(/user_id.*index:.*using: :hash/)
+        expect(dump_posts).not_to match(%r{order})
       end
     end
 
