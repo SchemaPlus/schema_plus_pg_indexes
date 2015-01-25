@@ -3,42 +3,39 @@ module SchemaPlusIndexes
     module Dumper
 
       def self.insert
-        SchemaMonkey::Middleware::Dumper::Table.append InlineIndexes
+        SchemaMonkey::Middleware::Dumper::Table.append ColumnIndexes
       end
 
-      class InlineIndexes < SchemaMonkey::Middleware::Base
+      class ColumnIndexes < SchemaMonkey::Middleware::Base
         def call(env)
           continue env
 
-          # TODO: if there is more than one index on a single column, should
-          # only put one of them in the table statements; the rest need to
-          # be left in the table.   (Because Rails' implementation of t.index
-          # stores the index data indexed by column name, so you only get
-          # one.)
-          # TODO: maybe define the inline indexes using column options
-          # rather than t.index
-
-          # we'll put the index definitions inline
-          env.table.trailer.reject!{ |s| s =~ /^\s*add_index\b/ }
-
-          env.table.statements += env.connection.indexes(env.table.name).collect{ |index|
-            dump = "t.index"
-            dump << " #{index.columns.inspect}," unless index.columns.blank?
-            dump << " :name => #{index.name.inspect}"
-            dump << ", :unique => true" if index.unique
-            dump << ", :using => \"#{index.using}\"" unless index.using.blank?
-            unless index.columns.blank?
-              dump << ", :case_sensitive => false" unless index.case_sensitive?
-              dump << ", :where => #{index.where.inspect}" unless index.where.blank?
-              index_lengths = index.lengths.compact if index.lengths.is_a?(Array)
-              dump << ", :length => #{Hash[*index.columns.zip(index.lengths).flatten].inspect}" if index_lengths.present?
-              dump << ", :order => {" + index.orders.map{|column, val| "#{column.inspect} => #{val.inspect}"}.join(", ") + "}" unless index.orders.blank?
-              dump << ", :operator_class => {" + index.operator_classes.map{|column, val| "#{column.inspect} => #{val.inspect}"}.join(", ") + "}" unless index.operator_classes.blank?
-            else
-              dump << ", :expression => #{index.expression.inspect}"
+          # move each column's index to its column, and remove them from the
+          # list of indexes that AR would dump after the table.  Any left
+          # over will still be dumped by AR.
+          env.table.columns.each do |column|
+            
+            # first check for a single-column index
+            if (index = env.table.indexes.find(&its.columns == [column.name]))
+              column.add_option column_index(env, column, index)
+              env.table.indexes.delete(index)
+              
+            # then check for the first of a multi-column index
+            elsif (index = env.table.indexes.find(&its.columns.first == column.name))
+              column.add_option column_index(env, column, index)
+              env.table.indexes.delete(index)
             end
-            dump << "\n"
-          }.sort
+
+          end
+
+        end
+
+        def column_index(env, column, index)
+          parts = []
+          parts << "name: #{index.name.inspect}"
+          parts << "with: #{(index.columns - [column.name]).inspect}" if index.columns.length > 1
+          parts << index.options unless index.options.blank?
+          "index: {#{parts.join(', ')}}"
         end
       end
     end
