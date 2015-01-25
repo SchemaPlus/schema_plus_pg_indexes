@@ -4,6 +4,7 @@ module SchemaPlusIndex
 
       def self.insert
         SchemaMonkey::Middleware::Migration::Column.prepend Shortcuts
+        SchemaMonkey::Middleware::Migration::Column.append IndexOnAddColumn
         SchemaMonkey::Middleware::Migration::Index.prepend NormalizeArgs
         SchemaMonkey::Middleware::Migration::Index.prepend IgnoreDuplicates
       end
@@ -15,6 +16,18 @@ module SchemaPlusIndex
           when :unique then env.options[:index] = { :unique => true }
           end
           continue env
+        end
+      end
+
+      class IndexOnAddColumn < SchemaMonkey::Middleware::Base
+        def call(env)
+          continue env
+          return unless env.options[:index]
+
+          case env.operation
+          when :add, :record
+            env.caller.add_index(env.table_name, env.column_name, env.options[:index])
+          end
         end
       end
 
