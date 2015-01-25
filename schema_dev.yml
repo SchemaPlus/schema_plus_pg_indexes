@@ -1,0 +1,9 @@
+ruby:
+    - 1.9.3
+    - 2.1.5
+rails:
+    - 4.2
+db:
+    - mysql2
+    - sqlite3
+    - postgresql
