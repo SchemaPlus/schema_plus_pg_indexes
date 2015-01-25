@@ -5,7 +5,41 @@
 
 # schema_plus_index
 
-TODO: Write a gem description
+Schema_plus_index adds various convenient capabilities to `ActiveRecord`'s index handling:
+
+* Adds shorthands to the `:index` option in migrations
+
+      create_table :parts do |t|
+        t.string :role,             index: true     # shorthand for index: {}
+        t.string :product_code,     index: :unique  # shorthand for index: { unique: true }
+        t.string :first_name
+        t.string :last_name,        index: { with: :first_name }  # multi-column index
+
+        t.string :country_code
+        t.string :area_code
+        t.string :local_number,     index: { with: [:country_code, :area_code] } # multi-column index
+      end
+
+  Of course options can be combined, such as `index: { with: :first_name, unique: true, name: "my_index"}`
+
+* Ensures that the `:index` option is respected by `Migration.add_column` and in `Migration.change_table`
+
+* Adds `:if_exists` option to `ActiveRecord::Migration.remove_index`
+
+* Provides consistent behavior regarding attempted duplicate index
+  creation: Ignore and log a warning.  Different versions of Rails with
+  different db adapters otherwise behave inconsistently: some ignore the
+  attempt, some raise an error.
+
+* `Model.indexes` returns the indexes defined for the `ActiveRecord` model.
+  Shorthand for `connection.indexes(Model.table_name)`; the value is cached
+  until the next time `Model.reset_column_information` is called
+
+* In the schema dump `schema.rb`, index definitions are included within the
+  `create_table` statements rather than added afterwards
+
+* When using SQLite3, makes sure that the definitions returned by
+  `connection.indexes` properly include the column orders (`:asc` or `:desc`)
 
 schema_plus_index is part of the [SchemaPlus](https://github.com/SchemaPlus/) family of Ruby on Rails extension gems.
 
@@ -27,14 +61,12 @@ schema_plus_index is tested on
 
 [//]: # SCHEMA_DEV: MATRIX - end
 
-## Usage
-
-TODO: Write usage instructions here
-
 
 ## History
 
-*   See [CHANGELOG](CHANGELOG.md) for per-version release notes.
+### v0.1.0
+
+* Initial release
 
 ## Development & Testing
 
