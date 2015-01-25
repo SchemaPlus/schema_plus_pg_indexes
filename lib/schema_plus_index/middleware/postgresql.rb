@@ -7,7 +7,7 @@ module SchemaPlusIndex
       end
 
       class DefineExtensions < SchemaMonkey::Middleware::Base
-        # SchemaPlus provides the following extra options for PostgreSQL
+        # SchemaPlusIndex provides the following extra options for PostgreSQL
         # indexes:
         # * +:expression+ - SQL expression to index.  column_name can be nil or ommitted, in which case :name must be provided
         # * +:operator_class+ - an operator class name or a hash mapping column name to operator class name
