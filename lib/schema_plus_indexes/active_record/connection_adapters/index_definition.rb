@@ -7,7 +7,7 @@ module SchemaPlusIndexes
       # support).
       module IndexDefinition
         def self.included(base)  #:nodoc:
-          base.alias_method_chain :initialize, :schema_plus
+          base.alias_method_chain :initialize, :schema_plus_indexes
         end
 
         attr_accessor :expression
@@ -27,16 +27,16 @@ module SchemaPlusIndexes
           using
         end
 
-        def initialize_with_schema_plus(*args) #:nodoc:
+        def initialize_with_schema_plus_indexes(*args) #:nodoc:
           # same args as add_index(table_name, column_names, options)
           if args.length == 3 and Hash === args.last
             table_name, column_names, options = args + [{}]
-            initialize_without_schema_plus(table_name, options[:name], options[:unique], column_names, options[:length], options[:orders], options[:where], options[:type], options[:using])
+            initialize_without_schema_plus_indexes(table_name, options[:name], options[:unique], column_names, options[:length], options[:orders], options[:where], options[:type], options[:using])
             @expression = options[:expression]
             @case_sensitive = options.include?(:case_sensitive) ? options[:case_sensitive] : true
             @operator_classes = options[:operator_classes] || {}
           else # backwards compatibility
-            initialize_without_schema_plus(*args)
+            initialize_without_schema_plus_indexes(*args)
             @case_sensitive = true
             @operator_classes = {}
           end

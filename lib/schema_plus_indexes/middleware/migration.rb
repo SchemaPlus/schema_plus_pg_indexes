@@ -62,7 +62,7 @@ module SchemaPlusIndexes
           existing = env.caller.indexes(env.table_name).find{|i| i.name == name}
           attempted = ::ActiveRecord::ConnectionAdapters::IndexDefinition.new(env.table_name, env.column_names, env.options.merge(:name => name))
           raise if attempted != existing
-          ::ActiveRecord::Base.logger.warn "[schema_plus] Index name #{name.inspect}' on table #{env.table_name.inspect} already exists. Skipping."
+          ::ActiveRecord::Base.logger.warn "[schema_plus_indexes] Index name #{name.inspect}' on table #{env.table_name.inspect} already exists. Skipping."
         end
       end
 
