@@ -1,8 +1,8 @@
-module SchemaPlusIndex
+module SchemaPlusIndexes
   module ActiveRecord
     module ConnectionAdapters
       #
-      # SchemaPlusIndex extends the IndexDefinition object to return information
+      # SchemaPlusIndexes extends the IndexDefinition object to return information
       # about partial indexes and case sensitivity (i.e. Postgresql
       # support).
       module IndexDefinition

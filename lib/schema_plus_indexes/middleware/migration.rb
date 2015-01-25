@@ -1,4 +1,4 @@
-module SchemaPlusIndex
+module SchemaPlusIndexes
   module Middleware
     module Migration
 
@@ -48,12 +48,12 @@ module SchemaPlusIndex
       end
 
       class IgnoreDuplicates < SchemaMonkey::Middleware::Base
-        # SchemaPlusIndex modifies SchemaStatements::add_index so that it ignores
+        # SchemaPlusIndexes modifies SchemaStatements::add_index so that it ignores
         # errors raised about add an index that already exists -- i.e. that has
         # the same index name, same columns, and same options -- and writes a
         # warning to the log. Some combinations of rails & DB adapter versions
         # would log such a warning, others would raise an error; with
-        # SchemaPlusIndex all versions log the warning and do not raise the error.
+        # SchemaPlusIndexes all versions log the warning and do not raise the error.
         def call(env)
           continue env
         rescue => e

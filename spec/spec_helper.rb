@@ -7,7 +7,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'rspec'
 require 'active_record'
-require 'schema_plus_index'
+require 'schema_plus_indexes'
 require 'schema_dev/rspec'
 
 SchemaDev::Rspec.setup
@@ -15,7 +15,7 @@ SchemaDev::Rspec.setup
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
-  config.include(SchemaPlusIndexMatchers)
+  config.include(SchemaPlusIndexesMatchers)
   config.warnings = true
 end
 

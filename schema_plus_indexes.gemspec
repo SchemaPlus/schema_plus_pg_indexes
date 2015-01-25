@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'schema_plus_index/version'
+require 'schema_plus_indexes/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "schema_plus_index"
-  spec.version       = SchemaPlusIndex::VERSION
+  spec.name          = "schema_plus_indexes"
+  spec.version       = SchemaPlusIndexes::VERSION
   spec.authors       = ["ronen barzel"]
   spec.email         = ["ronen@barzel.org"]
   spec.summary       = %q{TODO: Write a short summary. Required.}
   spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = "https://github.com/SchemaPlus/schema_plus_index"
+  spec.homepage      = "https://github.com/SchemaPlus/schema_plus_indexes"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")

@@ -1,4 +1,4 @@
-module SchemaPlusIndexMatchers
+module SchemaPlusIndexesMatchers
 
   class HaveIndex
 
