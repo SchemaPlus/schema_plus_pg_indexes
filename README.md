@@ -38,6 +38,20 @@ schema_plus_pg_indexes is tested on
 
 <!-- SCHEMA_DEV: MATRIX - end -->
 
+## Deprecations
+
+SchemaPlus 1.8.x provided some options and accessors that are now available
+in rails 4.2, in slightly different form.  SchemaPlusPgIndexes supports the
+SchemaPlus 1.8.x form but issues deprecation warnings in favor of the rails
+form:
+
+* Index definition deprecates these options:
+  * `:conditions` => `:where`
+  * `:kind` => `:using`
+
+* `IndexDefinition` deprecates accessors: 
+  * `#conditions` in favor of `#where`
+  * `#kind` in favor of `#using.to_s`
 
 ## History
 
