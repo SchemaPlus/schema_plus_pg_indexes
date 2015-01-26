@@ -3,7 +3,20 @@ module SchemaPlusPgIndexes
     module Postgresql
       module Migration
         def self.insert
+          SchemaMonkey::Middleware::Migration::Index.prepend DeprecateArgs
           SchemaMonkey::Middleware::Migration::IndexComponentsSql.append DefineExtensions
+        end
+
+        class DeprecateArgs < SchemaMonkey::Middleware::Base
+          def call(env)
+            {:conditions => :where, :kind => :using}.each do |deprecated, proper|
+              if env.options[deprecated]
+                ActiveSupport::Deprecation.warn "ActiveRecord index option #{deprecated.inspect} is deprecated, use #{proper.inspect} instead"
+                env.options[proper] = env.options.delete(deprecated)
+              end
+            end
+            continue env
+          end
         end
 
         class DefineExtensions < SchemaMonkey::Middleware::Base
