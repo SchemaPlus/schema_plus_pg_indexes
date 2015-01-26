@@ -35,42 +35,6 @@ describe "index" do
       end
     end
 
-    it "should create index when called without additional options" do
-      add_index(:users, :login)
-      expect(index_for(:login)).not_to be_nil
-    end
-
-    it "should create unique index" do
-      add_index(:users, :login, :unique => true)
-      expect(index_for(:login).unique).to eq(true)
-    end
-
-    it "should assign given name" do
-      add_index(:users, :login, :name => 'users_login_index')
-      expect(index_for(:login).name).to eq('users_login_index')
-    end
-
-    it "should assign order", :mysql => :skip do
-      add_index(:users, [:login, :deleted_at], :order => {:login => :desc, :deleted_at => :asc})
-      expect(index_for([:login, :deleted_at]).orders).to eq({"login" => :desc, "deleted_at" => :asc})
-    end
-
-    context "for duplicate index" do
-      it "should not complain if the index is the same" do
-        add_index(:users, :login)
-        expect(index_for(:login)).not_to be_nil
-        expect(ActiveRecord::Base.logger).to receive(:warn).with(/login.*Skipping/)
-        expect { add_index(:users, :login) }.to_not raise_error
-        expect(index_for(:login)).not_to be_nil
-      end
-      it "should complain if the index is different" do
-        add_index(:users, :login, :unique => true)
-        expect(index_for(:login)).not_to be_nil
-        expect { add_index(:users, :login) }.to raise_error
-        expect(index_for(:login)).not_to be_nil
-      end
-    end
-
     context "extra features", :postgresql => :only do
 
       it "should assign conditions" do
@@ -135,89 +99,6 @@ describe "index" do
       @index = User.indexes.detect { |i| i.columns == Array(column_names).collect(&:to_s) }
     end
 
-  end
-
-  describe "remove_index" do
-
-    before(:each) do
-      connection.tables.each do |table| connection.drop_table table, cascade: true end
-      define_schema(:auto_create => false) do
-        create_table :users, :force => true do |t|
-          t.string :login
-          t.datetime :deleted_at
-        end
-      end
-      class User < ::ActiveRecord::Base ; end
-    end
-
-
-    it "removes index by column name (symbols)" do
-      add_index :users, :login
-      expect(User.indexes.length).to eq(1)
-      remove_index :users, :login
-      expect(User.indexes.length).to eq(0)
-    end
-
-    it "removes index by column name (symbols)" do
-      add_index :users, :login
-      expect(User.indexes.length).to eq(1)
-      remove_index 'users', 'login'
-      expect(User.indexes.length).to eq(0)
-    end
-
-    it "removes multi-column index by column names (symbols)" do
-      add_index :users, [:login, :deleted_at]
-      expect(User.indexes.length).to eq(1)
-      remove_index :users, [:login, :deleted_at]
-      expect(User.indexes.length).to eq(0)
-    end
-
-    it "removes multi-column index by column names (strings)" do
-      add_index 'users', [:login, :deleted_at]
-      expect(User.indexes.length).to eq(1)
-      remove_index 'users', ['login', 'deleted_at']
-      expect(User.indexes.length).to eq(0)
-    end
-
-    it "removes index using column option" do
-      add_index :users, :login
-      expect(User.indexes.length).to eq(1)
-      remove_index :users, column: :login
-      expect(User.indexes.length).to eq(0)
-    end
-
-    it "removes index if_exists" do
-      add_index :users, :login
-      expect(User.indexes.length).to eq(1)
-      remove_index :users, :login, :if_exists => true
-      expect(User.indexes.length).to eq(0)
-    end
-
-    it "removes multi-column index if exists" do
-      add_index :users, [:login, :deleted_at]
-      expect(User.indexes.length).to eq(1)
-      remove_index :users, [:login, :deleted_at], :if_exists => true
-      expect(User.indexes.length).to eq(0)
-    end
-
-    it "removes index if_exists using column option" do
-      add_index :users, :login
-      expect(User.indexes.length).to eq(1)
-      remove_index :users, column: :login, :if_exists => true
-      expect(User.indexes.length).to eq(0)
-    end
-
-    it "raises exception if doesn't exist" do
-      expect {
-        remove_index :users, :login
-      }.to raise_error
-    end
-
-    it "doesn't raise exception with :if_exists" do
-      expect {
-        remove_index :users, :login, :if_exists => true
-      }.to_not raise_error
-    end
   end
 
   protected

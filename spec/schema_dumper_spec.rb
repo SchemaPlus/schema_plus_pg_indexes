@@ -44,37 +44,7 @@ describe "Schema dump" do
     class ::Comment < ActiveRecord::Base ; end
   end
 
-  it "should include in-table index definition" do
-    with_index Post, :user_id do
-      expect(dump_posts).to match(/"user_id",.*index:/)
-    end
-  end
-
-  it "should not include add_index statement" do
-    with_index Post, :user_id do
-      expect(dump_posts).not_to match(%r{add_index.*user_id})
-    end
-  end
-
-  it "should include index name" do
-    with_index Post, :user_id, :name => "custom_name" do
-      expect(dump_posts).to match(/"user_id",.*index:.*name: "custom_name"/)
-    end
-  end
-
-  it "should define unique index" do
-    with_index Post, :user_id, :name => "posts_user_id_index", :unique => true do
-      expect(dump_posts).to match(/"user_id",.*index:.*name: "posts_user_id_index", unique: true/)
-    end
-  end
-
-  it "should include index order", :mysql => :skip do
-    with_index Post, [:user_id, :first_comment_id, :short_id], :order => { :user_id => :asc, :first_comment_id => :desc } do
-      expect(dump_posts).to match(/"user_id".*index: {.*with: \["first_comment_id", "short_id"\],.*order: {"user_id"=>:asc, "first_comment_id"=>:desc, "short_id"=>:asc}}/)
-    end
-  end
-
-  context "index extras", :postgresql => :only do
+  context "index extras" do
 
     it "should define case insensitive index" do
       with_index Post, [:body, :string_no_default], :case_sensitive => false do
@@ -157,10 +127,6 @@ describe "Schema dump" do
   end
 
   protected
-
-  def to_regexp(string)
-    Regexp.new(Regexp.escape(string))
-  end
 
   def with_index(*args)
     options = args.extract_options!

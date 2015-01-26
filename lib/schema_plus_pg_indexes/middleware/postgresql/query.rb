@@ -1,4 +1,4 @@
-module SchemaPlusIndexes
+module SchemaPlusPgIndexes
   module Middleware
     module Postgresql
       module Query

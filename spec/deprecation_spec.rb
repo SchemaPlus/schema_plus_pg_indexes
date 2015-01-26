@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Deprecations', :postgresql => :only do
+describe 'Deprecations' do
 
   before(:all) do
       class User < ::ActiveRecord::Base ; end
