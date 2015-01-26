@@ -1,6 +1,7 @@
 /coverage
 /tmp
 /pkg
+/Gemfile.local
 
 *.lock
 *.log
