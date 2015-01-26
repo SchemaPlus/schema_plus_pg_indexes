@@ -5,43 +5,20 @@
 
 # schema_plus_pg_indexes
 
-Schema_plus_index adds various convenient capabilities to `ActiveRecord`'s index handling:
+Schema_plus_pg_indexes adds into `ActiveRecord` support for some additional PostgreSQL index features: expressions, operator classes, and case-insensitive indexes:
 
-* Adds shorthands to the `:index` option in migrations
+    t.string :last_name,  index: { expression: 'upper(last_name)' }
+    t.string :last_name,  index: { operator_class: 'varchar_pattern_ops' }
+    t.string :last_name,  index: { with: :address, operator_class: {last_name: 'varchar_pattern_ops', address: 'text_pattern_ops' }
+    t.string :last_name,  index: { case_sensitive: false }
 
-      create_table :parts do |t|
-        t.string :role,             index: true     # shorthand for index: {}
-        t.string :product_code,     index: :unique  # shorthand for index: { unique: true }
-        t.string :first_name
-        t.string :last_name,        index: { with: :first_name }  # multi-column index
+    t.index expression: 'upper(last_name)', name: 'my_index' # no column given, must give a name
 
-        t.string :country_code
-        t.string :area_code
-        t.string :local_number,     index: { with: [:country_code, :area_code] } # multi-column index
-      end
+Case insensitivity is a shorthand for the expression `lower(last_name)`
 
-  Of course options can be combined, such as `index: { with: :first_name, unique: true, name: "my_index"}`
+The `ActiveRecord::ConnectionAdapters::IndexDefinition` object has the corresponding methods defined on it: `#expression`, `#operator_classes` and `#case_sensitive?`
 
-* Ensures that the `:index` option is respected by `Migration.add_column` and in `Migration.change_table`
-
-* Adds `:if_exists` option to `ActiveRecord::Migration.remove_index`
-
-* Provides consistent behavior regarding attempted duplicate index
-  creation: Ignore and log a warning.  Different versions of Rails with
-  different db adapters otherwise behave inconsistently: some ignore the
-  attempt, some raise an error.
-
-* `Model.indexes` returns the indexes defined for the `ActiveRecord` model.
-  Shorthand for `connection.indexes(Model.table_name)`; the value is cached
-  until the next time `Model.reset_column_information` is called
-
-* In the schema dump `schema.rb`, index definitions are included within the
-  `create_table` statements rather than added afterwards
-
-* When using SQLite3, makes sure that the definitions returned by
-  `connection.indexes` properly include the column orders (`:asc` or `:desc`)
-
-schema_plus_pg_indexes is part of the [SchemaPlus](https://github.com/SchemaPlus/) family of Ruby on Rails extension gems.
+Schema_plus_pg_indexes is part of the [SchemaPlus](https://github.com/SchemaPlus/) family of Ruby on Rails extension gems.
 
 ## Installation
 
