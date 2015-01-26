@@ -116,14 +116,6 @@ describe "Schema dump" do
         expect(dump_posts).to match(/body.*index:.*using: :hash/)
       end
     end
-
-    it "should not include index order for non-ordered index types" do
-      with_index Post, :user_id, :using => :hash do
-        expect(dump_posts).to match(/user_id.*index:.*using: :hash/)
-        expect(dump_posts).not_to match(%r{order})
-      end
-    end
-
   end
 
   protected
