@@ -8,8 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = SchemaPlusPgIndexes::VERSION
   spec.authors       = ["ronen barzel"]
   spec.email         = ["ronen@barzel.org"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Adds support in ActiveRecord for PostgreSQL index expressions and operator classes, as well as a shorthand for case-insensitive indexes}
   spec.homepage      = "https://github.com/SchemaPlus/schema_plus_pg_indexes"
   spec.license       = "MIT"
 
