@@ -23,8 +23,8 @@ module SchemaPlusPgIndexes
         end
 
         def kind
-          ActiveSupport::Deprecation.warn "ActiveRecord IndexDefinition#kind is deprecated, used #using instead"
-          using
+          ActiveSupport::Deprecation.warn "ActiveRecord IndexDefinition#kind is deprecated, used #using.to_s instead"
+          using.to_s
         end
 
         def initialize_with_schema_plus_pg_indexes(*args)

@@ -43,7 +43,7 @@ describe 'Deprecations' do
       index = User.indexes.first
       expect(ActiveSupport::Deprecation).to receive(:warn).with(/kind.*using/)
       expect(index.using).to eq using # sanity check
-      expect(index.kind).to eq index.using
+      expect(index.kind).to eq using.to_s
     end
   end
 
