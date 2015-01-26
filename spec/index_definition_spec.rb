@@ -6,7 +6,7 @@ describe "Index definition" do
   let(:migration) { ::ActiveRecord::Migration }
 
   before(:all) do
-    define_schema(:auto_create => false) do
+    define_schema do
       create_table :users, :force => true do |t|
         t.string :login
         t.datetime :deleted_at

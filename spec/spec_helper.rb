@@ -19,7 +19,7 @@ RSpec.configure do |config|
   config.warnings = true
 end
 
-def define_schema(config={}, &block)
+def define_schema(&block)
   ActiveRecord::Migration.suppress_messages do
     ActiveRecord::Schema.define do
       connection.tables.each do |table|

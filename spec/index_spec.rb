@@ -10,7 +10,7 @@ describe "index" do
     before(:each) do
       connection.tables.each do |table| connection.drop_table table, cascade: true end
 
-      define_schema(:auto_create => false) do
+      define_schema do
         create_table :users, :force => true do |t|
           t.string :login
           t.text :address
@@ -35,14 +35,9 @@ describe "index" do
       end
     end
 
-    context "extra features", :postgresql => :only do
+    context "extra features" do
 
-      it "should assign conditions" do
-        add_index(:users, :login, :where => 'deleted_at IS NULL')
-        expect(index_for(:login).where).to eq('(deleted_at IS NULL)')
-      end
-
-      it "should assign expression, conditions and using" do
+      it "should assign expression, where and using" do
         add_index(:users, :expression => "USING hash (upper(login)) WHERE deleted_at IS NULL", :name => 'users_login_index')
         @index = User.indexes.detect { |i| i.expression.present? }
         expect(@index.expression).to eq("upper((login)::text)")
@@ -50,17 +45,12 @@ describe "index" do
         expect(@index.using).to       eq(:hash)
       end
 
-      it "should allow to specify expression, conditions and using separately" do
+      it "should allow to specify expression, where and using separately" do
         add_index(:users, :using => "hash", :expression => "upper(login)", :where => "deleted_at IS NULL", :name => 'users_login_index')
         @index = User.indexes.detect { |i| i.expression.present? }
         expect(@index.expression).to eq("upper((login)::text)")
         expect(@index.where).to eq("(deleted_at IS NULL)")
         expect(@index.using).to eq(:hash)
-      end
-
-      it "should allow to specify using" do
-        add_index(:users, :login, :using => "hash")
-        expect(index_for(:login).using).to eq(:hash)
       end
 
       it "should assign operator_class" do
