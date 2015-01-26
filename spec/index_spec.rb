@@ -93,6 +93,18 @@ describe "index" do
 
     end
 
+    context "create table" do
+      it "defines index with expression only" do
+        define_schema do
+          create_table :users, :force => true do |t|
+            t.string :login
+            t.index :expression => "upper(login)", name: "no_column"
+          end
+        end
+        expect(User.indexes.first.expression).to eq("upper((login)::text)")
+      end
+    end
+
     protected
 
     def index_for(column_names)
