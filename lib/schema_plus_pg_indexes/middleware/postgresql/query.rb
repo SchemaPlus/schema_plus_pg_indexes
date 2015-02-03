@@ -17,7 +17,7 @@ module SchemaPlusPgIndexes
             end
           end
 
-          def implementation(env)
+          def implement(env)
             # Ideally we'd let AR do its stuff and then add the extras.
             #
             # But one of the extras is expressions.  AR completely strips out
