@@ -2,11 +2,7 @@ module SchemaPlusPgIndexes
   module Middleware
     module Postgresql
       module Query
-        def self.insert
-          SchemaMonkey::Middleware::Query::Indexes.append LookupExtensions
-        end
-
-        class LookupExtensions < SchemaMonkey::Middleware::Base
+        module Indexes
 
           def get_opclass_names(env, opclasses)
             @opclass_names ||= {}
@@ -21,7 +17,7 @@ module SchemaPlusPgIndexes
             end
           end
 
-          def call(env)
+          def implementation(env)
             # Ideally we'd let AR do its stuff and then add the extras.
             #
             # But one of the extras is expressions.  AR completely strips out
@@ -38,24 +34,21 @@ module SchemaPlusPgIndexes
             # query we have the opportunity to handle tables of the form
             # 'namespace.tablename'
             #
-            # So, we use our code and DO NOT DO:
-            #
-            #      continue env
-            #
-            result = env.connection.query(<<-SQL, 'SCHEMA')
+            # So, this replacs the AR implementation
 
-           SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid,
-                  m.amname, pg_get_expr(d.indpred, t.oid) as conditions, pg_get_expr(d.indexprs, t.oid) as expression,
-                  d.indclass
-           FROM pg_class t
-           INNER JOIN pg_index d ON t.oid = d.indrelid
-           INNER JOIN pg_class i ON d.indexrelid = i.oid
-           INNER JOIN pg_am m ON i.relam = m.oid
-           WHERE i.relkind = 'i'
-             AND d.indisprimary = 'f'
-             AND t.relname = '#{table_name_without_namespace(env.table_name)}'
-             AND i.relnamespace IN (SELECT oid FROM pg_namespace WHERE nspname = #{namespace_sql(env.table_name)} )
-          ORDER BY i.relname
+            result = env.connection.query(<<-SQL, 'SCHEMA')
+              SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid,
+                      m.amname, pg_get_expr(d.indpred, t.oid) as conditions, pg_get_expr(d.indexprs, t.oid) as expression,
+                      d.indclass
+              FROM pg_class t
+              INNER JOIN pg_index d ON t.oid = d.indrelid
+              INNER JOIN pg_class i ON d.indexrelid = i.oid
+              INNER JOIN pg_am m ON i.relam = m.oid
+              WHERE i.relkind = 'i'
+                AND d.indisprimary = 'f'
+                AND t.relname = '#{table_name_without_namespace(env.table_name)}'
+                AND i.relnamespace IN (SELECT oid FROM pg_namespace WHERE nspname = #{namespace_sql(env.table_name)} )
+              ORDER BY i.relname
             SQL
 
             env.index_definitions += result.map do |(index_name, unique, indkey, inddef, oid, using, conditions, expression, indclass)|
@@ -63,10 +56,10 @@ module SchemaPlusPgIndexes
               opclasses = indclass.split(" ")
 
               rows = env.connection.query(<<-SQL, 'SCHEMA')
-              SELECT CAST(a.attnum as VARCHAR), a.attname, t.typname
-              FROM pg_attribute a
-              INNER JOIN pg_type t ON a.atttypid = t.oid
-              WHERE a.attrelid = #{oid}
+                SELECT CAST(a.attnum as VARCHAR), a.attname, t.typname
+                FROM pg_attribute a
+                INNER JOIN pg_type t ON a.atttypid = t.oid
+                WHERE a.attrelid = #{oid}
               SQL
               columns = {}
               types = {}

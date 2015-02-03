@@ -7,19 +7,20 @@ module SchemaPlusPgIndexes
           SchemaMonkey::Middleware::Migration::IndexComponentsSql.append DefineExtensions
         end
 
-        class DeprecateArgs < SchemaMonkey::Middleware::Base
-          def call(env)
+        module Index
+          # Deprecate args
+          def before(env)
             {:conditions => :where, :kind => :using}.each do |deprecated, proper|
               if env.options[deprecated]
                 ActiveSupport::Deprecation.warn "ActiveRecord index option #{deprecated.inspect} is deprecated, use #{proper.inspect} instead"
                 env.options[proper] = env.options.delete(deprecated)
               end
             end
-            continue env
           end
         end
 
-        class DefineExtensions < SchemaMonkey::Middleware::Base
+        module IndexComponentsSql
+
           # SchemaPlusPgIndexes provides the following extra options for PostgreSQL
           # indexes:
           # * +:expression+ - SQL expression to index.  column_name can be nil or ommitted, in which case :name must be provided
@@ -33,7 +34,7 @@ module SchemaPlusPgIndexes
           # using <tt>:expression</tt>, this raises an ArgumentError if both
           # are specified simultaneously.
           #
-          def call(env)
+          def around(env)
             options = env.options
             column_names = env.column_names
             table_name = env.table_name
@@ -61,7 +62,7 @@ module SchemaPlusPgIndexes
               end
             end
 
-            continue env
+            yield env
 
             if operator_classes and not operator_classes.is_a? Hash
               operator_classes = Hash[column_names.map {|name| [name, operator_classes]}]

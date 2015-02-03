@@ -3,15 +3,10 @@ module SchemaPlusPgIndexes
     module Postgresql
       module Dumper
 
-        def self.insert
-          SchemaMonkey::Middleware::Dumper::Indexes.append DumpExtensions
-          SchemaMonkey::Middleware::Dumper::Table.append InlineIndexes
-        end
+        module Indexes
 
-        class DumpExtensions < SchemaMonkey::Middleware::Base
-          def call(env)
-            continue env
-
+          # Dump index extensions
+          def after(env)
             index_defs = Dumper.get_index_defiinitions(env, env.table)
 
             env.table.indexes.each do |index_dump|
@@ -32,10 +27,10 @@ module SchemaPlusPgIndexes
           end
         end
 
-        class InlineIndexes < SchemaMonkey::Middleware::Base
-          def call(env)
-            continue env
+        module Table
 
+          # Move index definitions inline
+          def after(env)
             index_defs = Dumper.get_index_defiinitions(env, env.table)
 
             env.table.indexes.select(&its.columns.blank?).each do |index|
