@@ -6,10 +6,6 @@ module SchemaPlusPgIndexes
       # case sensitivity, expessions, and operator classes
       module IndexDefinition
 
-        def self.included(base)
-          base.alias_method_chain :initialize, :schema_plus_pg_indexes
-        end
-
         attr_accessor :expression
         attr_accessor :operator_classes
 
@@ -27,8 +23,8 @@ module SchemaPlusPgIndexes
           using.to_s
         end
 
-        def initialize_with_schema_plus_pg_indexes(*args)
-          initialize_without_schema_plus_pg_indexes(*args)
+        def initialize(*args)
+          super
           options = args.dup.extract_options!
           @expression = options[:expression]
           @operator_classes = options[:operator_classes] || {}
