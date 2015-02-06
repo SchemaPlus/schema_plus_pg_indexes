@@ -2,10 +2,6 @@ module SchemaPlusPgIndexes
   module Middleware
     module Postgresql
       module Migration
-        def self.insert
-          SchemaMonkey::Middleware::Migration::Index.prepend DeprecateArgs
-          SchemaMonkey::Middleware::Migration::IndexComponentsSql.append DefineExtensions
-        end
 
         module Index
           # Deprecate args

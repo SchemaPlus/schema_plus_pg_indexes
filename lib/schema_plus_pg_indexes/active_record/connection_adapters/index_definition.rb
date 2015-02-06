@@ -32,7 +32,7 @@ module SchemaPlusPgIndexes
         end
 
         def ==(other)
-          return false if not super(other) # can use super here because == is defined in SchemaPlusIndexes which was included before us
+          return false if not super other
           return false unless self.expression == other.expression
           return false unless !!self.case_sensitive? == !!other.case_sensitive?
           return false unless self.operator_classes == other.operator_classes
