@@ -7,7 +7,7 @@ module SchemaPlusPgIndexes
 
           # Dump index extensions
           def after(env)
-            index_defs = Dumper.get_index_defiinitions(env, env.table)
+            index_defs = Dumper.get_index_definitions(env, env.table)
 
             env.table.indexes.each do |index_dump|
               index_def = index_defs.find(&its.name == index_dump.name)
@@ -31,7 +31,7 @@ module SchemaPlusPgIndexes
 
           # Move index definitions inline
           def after(env)
-            index_defs = Dumper.get_index_defiinitions(env, env.table)
+            index_defs = Dumper.get_index_definitions(env, env.table)
 
             env.table.indexes.select(&its.columns.blank?).each do |index|
               env.table.statements << "t.index name: #{index.name.inspect}, #{index.options}"
@@ -40,7 +40,7 @@ module SchemaPlusPgIndexes
           end
         end
 
-        def self.get_index_defiinitions(env, table_dump)
+        def self.get_index_definitions(env, table_dump)
           env.dump.data.index_definitions ||= {}
           env.dump.data.index_definitions[table_dump.name] ||= env.connection.indexes(table_dump.name)
         end
