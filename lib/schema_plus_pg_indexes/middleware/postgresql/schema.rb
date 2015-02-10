@@ -1,7 +1,7 @@
 module SchemaPlusPgIndexes
   module Middleware
     module Postgresql
-      module Query
+      module Schema
         module Indexes
 
           def get_opclass_names(env, opclasses)
