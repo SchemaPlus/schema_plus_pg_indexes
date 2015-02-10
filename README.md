@@ -22,11 +22,25 @@ Schema_plus_pg_indexes is part of the [SchemaPlus](https://github.com/SchemaPlus
 
 ## Installation
 
-In your application's Gemfile
+<!-- SCHEMA_DEV: TEMPLATE INSTALLATION - begin -->
+<!-- These lines are auto-inserted from a schema_dev template -->
+As usual:
 
 ```ruby
-gem "schema_plus_pg_indexes"
+gem "schema_plus_pg_indexes"                # in a Gemfile
+gem.add_dependency "schema_plus_pg_indexes" # in a .gemspec
 ```
+
+To use with a rails app, also include
+
+```ruby
+gem "schema_monkey_rails"
+```
+
+which creates a Railtie to that will insert SchemaPlus::PgIndexes appropriately into the rails stack. To use with Padrino, see [schema_monkey_padrino](https://github.com/SchemaPlus/schema_monkey_padrino).
+
+<!-- SCHEMA_DEV: TEMPLATE INSTALLATION - end -->
+
 ## Compatibility
 
 schema_plus_pg_indexes is tested on
@@ -65,8 +79,10 @@ the standard protocol: fork, feature branch, develop, push, and issue pull reque
 
 Some things to know about to help you develop and test:
 
-* **schema_dev**:  schema_plus_pg_indexes uses [schema_dev](https://github.com/SchemaPlus/schema_dev) to
-  facilitate running rspec tests on the matrix of ruby, rails, and database
+<!-- SCHEMA_DEV: TEMPLATE USES SCHEMA_DEV - begin -->
+<!-- These lines are auto-inserted from a schema_dev template -->
+* **schema_dev**:  SchemaPlus::PgIndexes uses [schema_dev](https://github.com/SchemaPlus/schema_dev) to
+  facilitate running rspec tests on the matrix of ruby, activerecord, and database
   versions that the gem supports, both locally and on
   [travis-ci](http://travis-ci.org/SchemaPlus/schema_plus_pg_indexes)
 
@@ -75,15 +91,29 @@ Some things to know about to help you develop and test:
         $ schema_dev bundle install
         $ schema_dev rspec
 
-  You can also run on just one configuration at a time;  For info, see `schema_dev --help` or the
-  [schema_dev](https://github.com/SchemaPlus/schema_dev) README.
+  You can also run on just one configuration at a time;  For info, see `schema_dev --help` or the [schema_dev](https://github.com/SchemaPlus/schema_dev) README.
 
   The matrix of configurations is specified in `schema_dev.yml` in
   the project root.
 
-* **schema_monkey**: schema_plus_pg_indexes extends ActiveRecord using
-  [schema_monkey](https://github.com/SchemaPlus/schema_monkey)'s extension
-  API and protocols -- see its README for details.  If your contribution needs any additional monkey patching
-  that isn't already supported by
-  [schema_monkey](https://github.com/SchemaPlus/schema_monkey), please head
-  over there and submit a PR.
+
+<!-- SCHEMA_DEV: TEMPLATE USES SCHEMA_DEV - end -->
+<!-- SCHEMA_DEV: TEMPLATE USES SCHEMA_PLUS_CORE - begin -->
+<!-- These lines are auto-inserted from a schema_dev template -->
+* **schema_plus_core**: SchemaPlus::PgIndexes uses the SchemaPlus::Core API that
+  provides middleware callback stacks to make it easy to extend
+  ActiveRecord's behavior.  If that API is missing something you need for
+  your contribution, please head over to
+  [schema_plus_core](https://github/SchemaPlus/schema_plus_core) and open
+  an issue or pull request.  
+
+<!-- SCHEMA_DEV: TEMPLATE USES SCHEMA_PLUS_CORE - end -->
+<!-- SCHEMA_DEV: TEMPLATE USES SCHEMA_MONKEY - begin -->
+<!-- These lines are auto-inserted from a schema_dev template -->
+* **schema_monkey**: SchemaPlus::PgIndexes is implemented as a
+  [schema_monkey](https://github.com/SchemaPlus/schema_monkey) client,
+  using [schema_monkey](https://github.com/SchemaPlus/schema_monkey)'s
+  convention-based protocols for extending ActiveRecord and using middleware stacks.
+  For more information see [schema_monkey](https://github.com/SchemaPlus/schema_monkey)'s README.
+
+<!-- SCHEMA_DEV: TEMPLATE USES SCHEMA_MONKEY - end -->
