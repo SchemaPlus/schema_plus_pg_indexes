@@ -100,7 +100,7 @@ describe "Schema dump" do
 
     it 'should dump proper operator_class with case_sensitive => false' do
       with_index Post, :body, :operator_class => 'text_pattern_ops', :case_sensitive => false do
-        expect(dump_posts).to include(%q{t.index ["body"], name: "index_posts_on_body", case_sensitive: false, :operator_class: {"body" => "text_pattern_ops"}})
+        expect(dump_posts).to match(/body.*index:.*name: "index_posts_on_body", case_sensitive: false, operator_class: "text_pattern_ops"/)
       end
     end
 
