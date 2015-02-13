@@ -1,5 +1,5 @@
 require 'schema_monkey'
-require 'schema_plus_indexes'
+require 'schema_plus/indexes'
 
 require_relative 'schema_plus_pg_indexes/active_record/connection_adapters/index_definition'
 require_relative 'schema_plus_pg_indexes/active_record/connection_adapters/postgresql_adapter'
