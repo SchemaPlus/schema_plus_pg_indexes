@@ -106,7 +106,7 @@ Some things to know about to help you develop and test:
   ActiveRecord's behavior.  If that API is missing something you need for
   your contribution, please head over to
   [schema_plus_core](https://github/SchemaPlus/schema_plus_core) and open
-  an issue or pull request.
+  an issue or pull request.  
 
 <!-- SCHEMA_DEV: TEMPLATE USES SCHEMA_PLUS_CORE - end -->
 <!-- SCHEMA_DEV: TEMPLATE USES SCHEMA_MONKEY - begin -->
