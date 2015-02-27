@@ -31,14 +31,6 @@ gem "schema_plus_pg_indexes"                # in a Gemfile
 gem.add_dependency "schema_plus_pg_indexes" # in a .gemspec
 ```
 
-To use with a rails app, also include
-
-```ruby
-gem "schema_monkey_rails"
-```
-
-which creates a Railtie to that will insert SchemaPlus::PgIndexes appropriately into the rails stack. To use with Padrino, see [schema_monkey_padrino](https://github.com/SchemaPlus/schema_monkey_padrino).
-
 <!-- SCHEMA_DEV: TEMPLATE INSTALLATION - end -->
 
 ## Deprecations
