@@ -67,7 +67,7 @@ describe "index" do
 
       it "should create proper sql with jsonb expressions (schema_plus #212)" do
         add_index :users, :name => "json_expression", :using => :gin, :expression => "(json_col -> 'field')"
-        index = User.indexes.detect &its.name == "json_expression"
+        index = User.indexes.detect(&its.name == "json_expression")
         expect(index.expression).to eq("(json_col -> 'field'::text)")
       end
 
