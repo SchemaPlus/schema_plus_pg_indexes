@@ -12,7 +12,7 @@ describe "index" do
     after(:each) do
       migration.suppress_messages do
         User.indexes.each do |index|
-          migration.remove_index :users, name: index.name
+          migration.remove_index :users, name: index.name, if_exists: true
         end
         User.reset_column_information
       end
