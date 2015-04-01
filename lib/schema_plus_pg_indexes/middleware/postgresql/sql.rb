@@ -53,7 +53,7 @@ module SchemaPlusPgIndexes
             end
 
             if expression
-              env.sql.columns = expression.sub(/ ^\( (.*) \) $/x, '\1')
+              env.sql.columns = expression
             elsif operator_classes or case_insensitive
               option_strings = Hash[column_names.map {|name| [name, '']}]
               (operator_classes||{}).stringify_keys.each do |column, opclass|

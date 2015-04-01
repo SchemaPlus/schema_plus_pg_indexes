@@ -7,50 +7,46 @@ describe "index" do
 
   describe "add_index" do
 
-    before(:each) do
-      connection.tables.each do |table| connection.drop_table table, cascade: true end
-
-      define_schema do
-        create_table :users, :force => true do |t|
-          t.string :login
-          t.text :address
-          t.datetime :deleted_at
-        end
-
-        create_table :posts, :force => true do |t|
-          t.text :body
-          t.integer :user_id
-          t.integer :author_id
-        end
-
-      end
-      class User < ::ActiveRecord::Base ; end
-      class Post < ::ActiveRecord::Base ; end
-    end
-
+    class User < ::ActiveRecord::Base ; end
 
     after(:each) do
       migration.suppress_messages do
-        migration.remove_index(:users, :name => @index.name) if (@index ||= nil)
+        User.indexes.each do |index|
+          migration.remove_index :users, name: index.name
+        end
+        User.reset_column_information
       end
     end
 
     context "extra features" do
 
+      before(:each) do
+        connection.tables.each do |table| connection.drop_table table, cascade: true end
+
+        define_schema do
+          create_table :users, :force => true do |t|
+            t.string :login
+            t.text :address
+            t.jsonb :json_col
+            t.datetime :deleted_at
+          end
+        end
+      end
+
       it "should assign expression, where and using" do
         add_index(:users, :expression => "USING hash (upper(login)) WHERE deleted_at IS NULL", :name => 'users_login_index')
-        @index = User.indexes.detect { |i| i.expression.present? }
-        expect(@index.expression).to eq("upper((login)::text)")
-        expect(@index.where).to eq("(deleted_at IS NULL)")
-        expect(@index.using).to       eq(:hash)
+        index = User.indexes.detect { |i| i.expression.present? }
+        expect(index.expression).to eq("upper((login)::text)")
+        expect(index.where).to eq("(deleted_at IS NULL)")
+        expect(index.using).to       eq(:hash)
       end
 
       it "should allow to specify expression, where and using separately" do
         add_index(:users, :using => "hash", :expression => "upper(login)", :where => "deleted_at IS NULL", :name => 'users_login_index')
-        @index = User.indexes.detect { |i| i.expression.present? }
-        expect(@index.expression).to eq("upper((login)::text)")
-        expect(@index.where).to eq("(deleted_at IS NULL)")
-        expect(@index.using).to eq(:hash)
+        index = User.indexes.detect { |i| i.expression.present? }
+        expect(index.expression).to eq("upper((login)::text)")
+        expect(index.where).to eq("(deleted_at IS NULL)")
+        expect(index.using).to eq(:hash)
       end
 
       it "should assign operator_class" do
@@ -65,8 +61,14 @@ describe "index" do
 
       it "should allow to specify actual expression only" do
         add_index(:users, :expression => "upper(login)", :name => 'users_login_index')
-        @index = User.indexes.detect { |i| i.name == 'users_login_index' }
-        expect(@index.expression).to eq("upper((login)::text)")
+        index = User.indexes.detect { |i| i.name == 'users_login_index' }
+        expect(index.expression).to eq("upper((login)::text)")
+      end
+
+      it "should create proper sql with jsonb expressions (schema_plus #212)" do
+        add_index :users, :name => "json_expression", :using => :gin, :expression => "(json_col -> 'field')"
+        index = User.indexes.detect &its.name == "json_expression"
+        expect(index.expression).to eq("(json_col -> 'field'::text)")
       end
 
       it "should raise if no column given and expression is missing" do
@@ -98,7 +100,7 @@ describe "index" do
     protected
 
     def index_for(column_names)
-      @index = User.indexes.detect { |i| i.columns == Array(column_names).collect(&:to_s) }
+      User.indexes.detect { |i| i.columns == Array(column_names).collect(&:to_s) }
     end
 
   end
