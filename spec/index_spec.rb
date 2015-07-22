@@ -94,6 +94,22 @@ describe "index" do
           end
         end
         expect(User.indexes.first.expression).to eq("upper((login)::text)")
+        expect(User.indexes.first.name).to eq("no_column")
+      end
+    end
+
+    context "change table" do
+      it "defines index with expression only" do
+        define_schema do
+          create_table :users, :force => true do |t|
+            t.string :login
+          end
+          change_table :users do |t|
+            t.index :expression => "upper(login)", name: "no_column"
+          end
+        end
+        expect(User.indexes.first.expression).to eq("upper((login)::text)")
+        expect(User.indexes.first.name).to eq("no_column")
       end
     end
 
