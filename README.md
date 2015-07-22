@@ -61,9 +61,9 @@ schema_plus_pg_indexes is tested on
 
 ## History
 
-### v0.1.0
-
-* Initial release
+* v0.1.5 - Bug fix: t.index without column in change_table
+* v0.1.1 through v0.1.4 - Conform to schema_dev updates
+* v0.1.0 - Initial release
 
 ## Development & Testing
 
