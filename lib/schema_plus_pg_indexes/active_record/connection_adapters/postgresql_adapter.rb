@@ -6,9 +6,8 @@ module SchemaPlusPgIndexes
         # SchemaPlusPgIndexes allows the column_names paramter
         # to be left off
         #
-        def add_index(*args)
-          options = args.extract_options!
-          table_name, column_names = args
+        def add_index(table_name, column_names, options={})
+          column_names, options = [nil, column_names] if column_names.is_a? Hash
           super table_name, column_names, options
         end
       end
