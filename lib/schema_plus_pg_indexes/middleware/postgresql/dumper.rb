@@ -16,7 +16,7 @@ module SchemaPlusPgIndexes
               else
                 index_dump.add_option "case_sensitive: false" unless index_def.case_sensitive?
                 unless index_def.operator_classes.blank?
-                  if index_def.operator_classes.values.uniq.length == 1
+                  if index_def.columns.uniq.length == 1 && index_def.operator_classes.values.uniq.length == 1
                     index_dump.add_option "operator_class: #{index_def.operator_classes.values.first.inspect}"
                   else
                     index_dump.add_option "operator_class: {" + index_def.operator_classes.map{|column, val| "#{column.inspect}=>#{val.inspect}"}.join(", ") + "}"

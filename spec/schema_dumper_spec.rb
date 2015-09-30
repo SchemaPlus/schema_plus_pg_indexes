@@ -97,6 +97,12 @@ describe "Schema dump" do
         expect(dump_posts).to match(/body.*index:.*operator_class: {"body"=>"text_pattern_ops", "string_no_default"=>"varchar_pattern_ops"}/)
       end
     end
+    
+    it "should define multi-column operator classes even if one column has no operator" do
+      with_index Post, [:body, :string_no_default], :operator_class => {string_no_default: 'varchar_pattern_ops'} do
+        expect(dump_posts).to match(/body.*index:.*operator_class: {"string_no_default"=>"varchar_pattern_ops"}/)
+      end
+    end
 
     it 'should dump proper operator_class with case_sensitive => false' do
       with_index Post, :body, :operator_class => 'text_pattern_ops', :case_sensitive => false do
