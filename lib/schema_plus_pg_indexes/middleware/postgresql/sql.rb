@@ -52,9 +52,7 @@ module SchemaPlusPgIndexes
               operator_classes = Hash[column_names.map {|name| [name, operator_classes]}]
             end
 
-            if expression
-              env.sql.columns = expression
-            elsif operator_classes or case_insensitive
+            if operator_classes or case_insensitive
               option_strings = Hash[column_names.map {|name| [name, '']}]
               (operator_classes||{}).stringify_keys.each do |column, opclass|
                 option_strings[column] += " #{opclass}" if opclass
@@ -71,6 +69,10 @@ module SchemaPlusPgIndexes
               end
 
               env.sql.columns = quoted_column_names.join(', ')
+            end
+
+            if expression
+              env.sql.columns = (env.sql.columns.split(/ *, */).reject{|col| expression =~ %r{\b#{col.gsub(/['"]/, '')}\b} } + [expression]).join(', ')
             end
           end
         end

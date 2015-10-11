@@ -11,16 +11,13 @@ module SchemaPlusPgIndexes
 
             env.table.indexes.each do |index_dump|
               index_def = index_defs.find(&its.name == index_dump.name)
-              if index_def.columns.blank?
-                index_dump.add_option "expression: #{index_def.expression.inspect}" if index_def.expression and index_def.columns.blank?
-              else
-                index_dump.add_option "case_sensitive: false" unless index_def.case_sensitive?
-                unless index_def.operator_classes.blank?
-                  if index_def.columns.uniq.length == 1 && index_def.operator_classes.values.uniq.length == 1
-                    index_dump.add_option "operator_class: #{index_def.operator_classes.values.first.inspect}"
-                  else
-                    index_dump.add_option "operator_class: {" + index_def.operator_classes.map{|column, val| "#{column.inspect}=>#{val.inspect}"}.join(", ") + "}"
-                  end
+              index_dump.add_option "case_sensitive: false" unless index_def.case_sensitive?
+              index_dump.add_option "expression: #{index_def.expression.inspect}" if index_def.expression and index_def.case_sensitive?
+              unless index_def.operator_classes.blank?
+                if index_def.columns.uniq.length == 1 && index_def.operator_classes.values.uniq.length == 1
+                  index_dump.add_option "operator_class: #{index_def.operator_classes.values.first.inspect}"
+                else
+                  index_dump.add_option "operator_class: {" + index_def.operator_classes.map{|column, val| "#{column.inspect}=>#{val.inspect}"}.join(", ") + "}"
                 end
               end
             end
