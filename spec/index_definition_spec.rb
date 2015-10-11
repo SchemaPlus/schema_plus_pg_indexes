@@ -79,6 +79,35 @@ describe "Index definition" do
 
   end
 
+  context "when index contains mix of expressions and columns" do
+    before(:each) do
+      define_schema do
+        create_table :users, :force => true do |t|
+          t.string :alpha
+          t.string :beta
+          t.string :gamma
+          t.string :delta
+        end
+        execute "CREATE INDEX multi ON users (alpha, (upper(beta)), gamma, (upper(delta)))"
+      end
+      User.reset_column_information
+      @index = User.indexes.detect { |i| i.expression.present? }
+    end
+
+    it "exists" do
+      expect(@index).not_to be_nil
+    end
+
+    it "havs columns defined" do
+      expect(@index.columns).to eq(["alpha", "gamma"])
+    end
+
+    it "defines expression" do
+      expect(@index.expression).to eq("upper((beta)::text), upper((delta)::text)")
+    end
+
+  end
+
   context "when index has a non-btree type" do
     before(:each) do
       migration.execute "CREATE INDEX users_login_index ON users USING hash(login)"

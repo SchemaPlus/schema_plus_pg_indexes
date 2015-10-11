@@ -86,6 +86,13 @@ describe "Schema dump" do
       end
     end
 
+    it "should define multi-column with expression" do
+      with_index Post, :body, :expression => "(least(id, user_id))" do
+        expect(dump_posts).to match(/body.*index.*expression: "LEAST\(id, user_id\)"/)
+      end
+    end
+
+
     it "should define operator_class" do
       with_index Post, :body, :operator_class => 'text_pattern_ops' do
         expect(dump_posts).to match(/body.*index:.*operator_class: "text_pattern_ops"/)
