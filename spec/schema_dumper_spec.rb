@@ -3,18 +3,18 @@ require 'stringio'
 
 describe "Schema dump" do
 
-  before(:all) do
+  before(:each) do
     ActiveRecord::Migration.suppress_messages do
       ActiveRecord::Schema.define do
         connection.tables.each do |table| drop_table table, force: :cascade end
 
-        create_table :users, :force => true do |t|
+        create_table :users do |t|
           t.string :login
           t.datetime :deleted_at
           t.integer :first_post_id
         end
 
-        create_table :posts, :force => true do |t|
+        create_table :posts do |t|
           t.text :body
           t.integer :user_id
           t.integer :first_comment_id
@@ -32,7 +32,7 @@ describe "Schema dump" do
           t.boolean :boolean_col
         end
 
-        create_table :comments, :force => true do |t|
+        create_table :comments do |t|
           t.text :body
           t.integer :post_id
           t.integer :commenter_id
@@ -85,6 +85,13 @@ describe "Schema dump" do
         expect(dump_posts).to include(%q{t.index name: "posts_freaky_index", using: :hash, expression: "LEAST(id, user_id)"})
       end
     end
+
+    it "should define multi-column with expression" do
+      with_index Post, :body, :expression => "(least(id, user_id))" do
+        expect(dump_posts).to match(/body.*index.*expression: "LEAST\(id, user_id\)"/)
+      end
+    end
+
 
     it "should define operator_class" do
       with_index Post, :body, :operator_class => 'text_pattern_ops' do
@@ -139,13 +146,7 @@ describe "Schema dump" do
       ActiveRecord::Migration.add_index(model.table_name, columns, options)
     end
     model.reset_column_information
-    begin
-      yield
-    ensure
-      ActiveRecord::Migration.suppress_messages do
-        ActiveRecord::Migration.remove_index(model.table_name, :name => determine_index_name(model, columns, options))
-      end
-    end
+    yield
   end
 
   def determine_index_name(model, columns, options)

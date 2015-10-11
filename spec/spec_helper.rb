@@ -17,16 +17,19 @@ Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 RSpec.configure do |config|
   config.include(SchemaPlusPgIndexesMatchers)
   config.warnings = true
+  config.around(:each) do |example|
+    ActiveRecord::Migration.suppress_messages do
+      example.run
+    end
+  end
 end
 
 def define_schema(&block)
-  ActiveRecord::Migration.suppress_messages do
-    ActiveRecord::Schema.define do
-      connection.tables.each do |table|
-        drop_table table, force: :cascade
-      end
-      instance_eval &block
+  ActiveRecord::Schema.define do
+    connection.tables.each do |table|
+      drop_table table, force: :cascade
     end
+    instance_eval &block
   end
 end
 

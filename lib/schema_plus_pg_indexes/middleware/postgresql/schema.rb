@@ -76,13 +76,13 @@ module SchemaPlusPgIndexes
               # only applies to character, character varying, and text
               if expression
                 rexp_lower = %r{\blower\(\(?([^)]+)(\)::text)?\)}
-                if expression.match /\A#{rexp_lower}(?:, #{rexp_lower})*\z/
+                if expression.match /\A#{rexp_lower}(?:, #{rexp_lower})*\z/i
                   case_insensitive_columns = expression.scan(rexp_lower).map(&:first).select{|column| %W[char varchar text].include? types[column]}
                   if case_insensitive_columns.any?
                     case_sensitive = false
                     column_names = index_keys.map { |index_key|
                       index_key == '0' ? case_insensitive_columns.shift : columns[index_key]
-                    }.compact
+                    }.compact | column_names
                   end
                 end
               end
