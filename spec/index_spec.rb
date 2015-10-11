@@ -21,10 +21,8 @@ describe "index" do
     context "extra features" do
 
       before(:each) do
-        connection.tables.each do |table| connection.drop_table table, cascade: true end
-
         define_schema do
-          create_table :users, :force => true do |t|
+          create_table :users do |t|
             t.string :login
             t.text :address
             t.jsonb :json_col
@@ -88,7 +86,7 @@ describe "index" do
     context "create table" do
       it "defines index with expression only" do
         define_schema do
-          create_table :users, :force => true do |t|
+          create_table :users do |t|
             t.string :login
             t.index :expression => "upper(login)", name: "no_column"
           end

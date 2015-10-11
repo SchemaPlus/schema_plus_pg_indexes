@@ -5,7 +5,7 @@ describe "Index definition" do
 
   let(:migration) { ::ActiveRecord::Migration }
 
-  before(:all) do
+  before(:each) do
     define_schema do
       create_table :users, :force => true do |t|
         t.string :login
@@ -21,16 +21,6 @@ describe "Index definition" do
     end
     class User < ::ActiveRecord::Base ; end
     class Post < ::ActiveRecord::Base ; end
-  end
-
-  around(:each) do |example|
-    migration.suppress_messages do
-      example.run
-    end
-  end
-
-  after(:each) do
-    migration.remove_index :users, :name => 'users_login_index' if migration.index_name_exists? :users, 'users_login_index', true
   end
 
   context "when case insensitive is added" do
@@ -60,7 +50,7 @@ describe "Index definition" do
   end
 
 
-  context "when index contains expression" do
+  context "when index contains an expression" do
     before(:each) do
       migration.execute "CREATE INDEX users_login_index ON users (extract(EPOCH from deleted_at)) WHERE deleted_at IS NULL"
       User.reset_column_information
