@@ -3,19 +3,13 @@ require 'spec_helper'
 describe "index" do
 
   let(:migration) { ::ActiveRecord::Migration }
-  let(:connection) { ::ActiveRecord::Base.connection }
 
   describe "add_index" do
 
     class User < ::ActiveRecord::Base ; end
 
     after(:each) do
-      migration.suppress_messages do
-        User.indexes.each do |index|
-          migration.remove_index :users, name: index.name, if_exists: true
-        end
-        User.reset_column_information
-      end
+      User.reset_column_information
     end
 
     context "extra features" do

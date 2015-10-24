@@ -19,6 +19,9 @@ RSpec.configure do |config|
   config.warnings = true
   config.around(:each) do |example|
     ActiveRecord::Migration.suppress_messages do
+      ActiveRecord::Base.connection.tables.each do |table|
+        ActiveRecord::Migration.drop_table table, force: :cascade
+      end
       example.run
     end
   end
@@ -26,7 +29,7 @@ end
 
 def define_schema(&block)
   ActiveRecord::Schema.define do
-    connection.tables.each do |table|
+    ActiveRecord::Base.connection.tables.each do |table|
       drop_table table, force: :cascade
     end
     instance_eval &block
