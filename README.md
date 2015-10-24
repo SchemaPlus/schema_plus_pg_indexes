@@ -61,6 +61,7 @@ schema_plus_pg_indexes is tested on
 
 ## History
 
+* v0.1.8 - Bug fix: expression with operator class (#7)
 * v0.1.7 - Bug fix: mix of columns & expressions (#5)
 * v0.1.6 - Bug fix: operator class & multiple columns (#4).  Thanks to [@nbudin](https://github.com/nbudin)
 * v0.1.5 - Bug fix: `t.index` without column in `change_table`
