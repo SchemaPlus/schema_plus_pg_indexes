@@ -99,6 +99,13 @@ describe "Schema dump" do
       end
     end
 
+    it "should define expression with operator_class" do
+      with_index Post, :name => "expr_with_opclass", :expression => "upper(str_short || string_no_default)", :operator_class => 'text_pattern_ops' do
+        expect(dump_posts).to include(%q{t.index name: "expr_with_opclass", expression: "upper(((str_short)::text || (string_no_default)::text))", operator_class: "text_pattern_ops"})
+      end
+    end
+
+
     it "should define multi-column operator classes " do
       with_index Post, [:body, :string_no_default], :operator_class => {body: 'text_pattern_ops', string_no_default: 'varchar_pattern_ops' } do
         expect(dump_posts).to match(/body.*index:.*operator_class: {"body"=>"text_pattern_ops", "string_no_default"=>"varchar_pattern_ops"}/)

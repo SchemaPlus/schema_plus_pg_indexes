@@ -49,13 +49,15 @@ module SchemaPlusPgIndexes
             yield env
 
             if operator_classes and not operator_classes.is_a? Hash
-              operator_classes = Hash[column_names.map {|name| [name, operator_classes]}]
+              val = operator_classes
+              operator_classes = Hash[column_names.map {|name| [name, val]}]
+              operator_classes[nil] = val if expression
             end
 
             if operator_classes or case_insensitive
               option_strings = Hash[column_names.map {|name| [name, '']}]
               (operator_classes||{}).stringify_keys.each do |column, opclass|
-                option_strings[column] += " #{opclass}" if opclass
+                option_strings[column] += " #{opclass}" if opclass and column.present?
               end
               option_strings = connection.send :add_index_sort_order, option_strings, column_names, options
 
@@ -72,6 +74,7 @@ module SchemaPlusPgIndexes
             end
 
             if expression
+              expression = [expression, operator_classes[nil]].compact.join(' ') if operator_classes
               env.sql.columns = (env.sql.columns.split(/ *, */).reject{|col| expression =~ %r{\b#{col.gsub(/['"]/, '')}\b} } + [expression]).join(', ')
             end
           end
