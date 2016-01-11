@@ -22,6 +22,19 @@ describe "schema" do
       expect(User.indexes.first.name).to eq("no_column")
     end
 
+    it "defines two indexes with expression only" do
+      define_schema do
+        create_table :users do |t|
+          t.string :one
+          t.string :two
+          t.index :expression => "upper(one)", name: "index_one"
+          t.index :expression => "upper(two)", name: "index_two"
+        end
+      end
+      expect(User.indexes.map(&:name)).to eq(["index_one", "index_two"])
+      expect(User.indexes.map(&:expression)).to eq(["upper((one)::text)", "upper((two)::text)"])
+    end
+
     it "defines index with expression as column option" do
       define_schema do
         create_table :users do |t|
