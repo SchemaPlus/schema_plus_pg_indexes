@@ -11,13 +11,13 @@ module SchemaPlusPgIndexes
 
             env.table.indexes.each do |index_dump|
               index_def = index_defs.find(&its.name == index_dump.name)
-              index_dump.add_option "case_sensitive: false" unless index_def.case_sensitive?
-              index_dump.add_option "expression: #{index_def.expression.inspect}" if index_def.expression and index_def.case_sensitive?
+              index_dump.options[:case_sensitive] = false unless index_def.case_sensitive?
+              index_dump.options[:expression] = index_def.expression if index_def.expression and index_def.case_sensitive?
               unless index_def.operator_classes.blank?
                 if index_def.columns.uniq.length <= 1 && index_def.operator_classes.values.uniq.length == 1
-                  index_dump.add_option "operator_class: #{index_def.operator_classes.values.first.inspect}"
+                  index_dump.options[:operator_class] = index_def.operator_classes.values.first
                 else
-                  index_dump.add_option "operator_class: {" + index_def.operator_classes.map{|column, val| "#{column.inspect}=>#{val.inspect}"}.join(", ") + "}"
+                  index_dump.options[:operator_class] = index_def.operator_classes
                 end
               end
             end
@@ -31,7 +31,7 @@ module SchemaPlusPgIndexes
             index_defs = Dumper.get_index_definitions(env, env.table)
 
             env.table.indexes.select(&its.columns.blank?).each do |index|
-              env.table.statements << "t.index name: #{index.name.inspect}, #{index.options}"
+              env.table.statements << "t.index #{{name: index.name}.merge(index.options).to_s.sub(/^{(.*)}$/, '\1')}"
               env.table.indexes.delete(index)
             end
           end

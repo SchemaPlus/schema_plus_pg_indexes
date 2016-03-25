@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activerecord", "~> 4.2"
   spec.add_dependency "schema_plus_indexes", "~> 0.1", ">= 0.1.3"
+  spec.add_dependency "schema_plus_core", "~> 1.0"
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
