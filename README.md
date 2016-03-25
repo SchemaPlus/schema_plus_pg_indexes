@@ -61,6 +61,7 @@ schema_plus_pg_indexes is tested on
 
 ## History
 
+* v0.1.10 - Upgrade to schmea_plus_core 1.0
 * v0.1.9 - Bug fix: multiple expression indexes (#8)
 * v0.1.8 - Bug fix: expression with operator class (#7)
 * v0.1.7 - Bug fix: mix of columns & expressions (#5)
