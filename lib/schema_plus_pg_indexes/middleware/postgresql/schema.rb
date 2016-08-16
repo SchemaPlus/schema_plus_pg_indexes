@@ -53,7 +53,7 @@ module SchemaPlusPgIndexes
 
             env.index_definitions += result.map do |(index_name, unique, indkey, inddef, oid, using, conditions, expression, indclass)|
               index_keys = indkey.split(" ")
-              opclasses = indclass.split(" ")
+              opclasses = indclass.split(" ").map(&:to_i)
 
               rows = env.connection.query(<<-SQL, 'SCHEMA')
                 SELECT CAST(a.attnum as VARCHAR), a.attname, t.typname
