@@ -5,9 +5,9 @@
 ---
 sudo: false
 rvm:
-- 2.1.5
+- 2.3.1
 gemfile:
-- gemfiles/activerecord-4.2/Gemfile.postgresql
+- gemfiles/activerecord-5.0/Gemfile.postgresql
 env: POSTGRESQL_DB_USER=postgres
 addons:
   postgresql: '9.4'
