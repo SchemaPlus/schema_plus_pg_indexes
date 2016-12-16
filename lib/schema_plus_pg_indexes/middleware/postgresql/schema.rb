@@ -98,14 +98,14 @@ module SchemaPlusPgIndexes
               orders = desc_order_columns.any? ? Hash[column_names.map {|column| [column, desc_order_columns.include?(column) ? :desc : :asc]}] : {}
 
               ::ActiveRecord::ConnectionAdapters::IndexDefinition.new(env.table_name, column_names,
-                                                                      :name => index_name,
-                                                                      :unique => (unique == 't'),
-                                                                      :orders => orders,
-                                                                      :where => conditions,
-                                                                      :case_sensitive => case_sensitive,
-                                                                      :using => using.downcase == "btree" ? nil : using.to_sym,
-                                                                      :operator_classes => operator_classes,
-                                                                      :expression => expression)
+                                                                      name:             index_name,
+                                                                      unique:           unique,
+                                                                      orders:           orders,
+                                                                      where:            conditions,
+                                                                      case_sensitive:   case_sensitive,
+                                                                      using:            using.downcase == "btree" ? nil : using.to_sym,
+                                                                      operator_classes: operator_classes,
+                                                                      expression:       expression)
             end
           end
 
