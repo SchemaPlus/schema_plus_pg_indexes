@@ -54,7 +54,7 @@ describe "Schema dump" do
 
     it "should define index with type cast" do
       with_index Post, [:integer_col], :name => "index_with_type_cast", :expression => "LOWER(integer_col::text)" do
-        expect(dump_posts).to include(%q{t.index :name=>"index_with_type_cast", :expression=>"lower((integer_col)::text)"})
+        expect(dump_posts).to include(%q{t.index [], :name=>"index_with_type_cast", :expression=>"lower((integer_col)::text)"})
       end
     end
 
@@ -82,7 +82,7 @@ describe "Schema dump" do
 
     it "should define expression" do
       with_index Post, :name => "posts_freaky_index", :expression => "USING hash (least(id, user_id))" do
-        expect(dump_posts).to include(%q{t.index :name=>"posts_freaky_index", :using=>:hash, :expression=>"LEAST(id, user_id)"})
+        expect(dump_posts).to include(%q{t.index [], :name=>"posts_freaky_index", :using=>:hash, :expression=>"LEAST(id, user_id)"})
       end
     end
 
@@ -101,7 +101,7 @@ describe "Schema dump" do
 
     it "should define expression with operator_class" do
       with_index Post, :name => "expr_with_opclass", :expression => "upper(str_short || string_no_default)", :operator_class => 'text_pattern_ops' do
-        expect(dump_posts).to include(%q{t.index :name=>"expr_with_opclass", :expression=>"upper(((str_short)::text || (string_no_default)::text))", :operator_class=>"text_pattern_ops"})
+        expect(dump_posts).to include(%q{t.index [], :name=>"expr_with_opclass", :expression=>"upper(((str_short)::text || (string_no_default)::text))", :operator_class=>"text_pattern_ops"})
       end
     end
 
@@ -126,14 +126,14 @@ describe "Schema dump" do
 
     it "should dump unique: true with expression (Issue #142)" do
       with_index Post, :name => "posts_user_body_index", :unique => true, :expression => "BTRIM(LOWER(body))" do
-        expect(dump_posts).to include(%q{t.index :name=>"posts_user_body_index", :unique=>true, :expression=>"btrim(lower(body))"})
+        expect(dump_posts).to include(%q{t.index [], :name=>"posts_user_body_index", :unique=>true, :expression=>"btrim(lower(body))"})
       end
     end
 
 
     it "should not define :case_sensitive => false with non-trivial expression" do
       with_index Post, :name => "posts_user_body_index", :expression => "BTRIM(LOWER(body))" do
-        expect(dump_posts).to include(%q{t.index :name=>"posts_user_body_index", :expression=>"btrim(lower(body))"})
+        expect(dump_posts).to include(%q{t.index [], :name=>"posts_user_body_index", :expression=>"btrim(lower(body))"})
       end
     end
 
