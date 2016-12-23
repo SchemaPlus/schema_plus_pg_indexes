@@ -53,7 +53,7 @@ module SchemaPlusPgIndexes
 
             env.index_definitions += result.map do |(index_name, unique, indkey, inddef, oid, using, conditions, expression, indclass)|
               index_keys = indkey.split(" ")
-              opclasses = indclass.split(" ")
+              opclasses = indclass.split(" ").map(&:to_i)
 
               rows = env.connection.query(<<-SQL, 'SCHEMA')
                 SELECT CAST(a.attnum as VARCHAR), a.attname, t.typname
@@ -98,14 +98,14 @@ module SchemaPlusPgIndexes
               orders = desc_order_columns.any? ? Hash[column_names.map {|column| [column, desc_order_columns.include?(column) ? :desc : :asc]}] : {}
 
               ::ActiveRecord::ConnectionAdapters::IndexDefinition.new(env.table_name, column_names,
-                                                                      :name => index_name,
-                                                                      :unique => (unique == 't'),
-                                                                      :orders => orders,
-                                                                      :where => conditions,
-                                                                      :case_sensitive => case_sensitive,
-                                                                      :using => using.downcase == "btree" ? nil : using.to_sym,
-                                                                      :operator_classes => operator_classes,
-                                                                      :expression => expression)
+                                                                      name:             index_name,
+                                                                      unique:           unique,
+                                                                      orders:           orders,
+                                                                      where:            conditions,
+                                                                      case_sensitive:   case_sensitive,
+                                                                      using:            using.downcase == "btree" ? nil : using.to_sym,
+                                                                      operator_classes: operator_classes,
+                                                                      expression:       expression)
             end
           end
 
