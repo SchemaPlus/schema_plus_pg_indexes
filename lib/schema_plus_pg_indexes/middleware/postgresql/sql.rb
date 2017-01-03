@@ -34,7 +34,7 @@ module SchemaPlusPgIndexes
             case_insensitive = (options.delete(:case_sensitive) == false)
 
             if expression
-              raise ArgumentError, "Cannot specify :case_sensitive => false with an expression.  Use LOWER(column_name)" if case_insensitive
+              raise ArgumentError, "Cannot specify :case_sensitive => false with an expression. Use LOWER(column_name)" if case_insensitive
               expression.strip!
               if m = expression.match(/^using\s+(?<using>\S+)\s*(?<rest>.*)/i)
                 options[:using] = m[:using]
@@ -55,22 +55,23 @@ module SchemaPlusPgIndexes
             end
 
             if operator_classes or case_insensitive
-              option_strings = Hash[column_names.map {|name| [name, '']}]
-              (operator_classes||{}).stringify_keys.each do |column, opclass|
-                option_strings[column] += " #{opclass}" if opclass and column.present?
-              end
-              option_strings = connection.send :add_index_sort_order, option_strings, column_names, options
-
               if case_insensitive
                 caseable_columns = connection.columns(table_name).select { |col| [:string, :text].include?(col.type) }.map(&:name)
                 quoted_column_names = column_names.map do |col_name|
-                  (caseable_columns.include?(col_name.to_s) ? "LOWER(#{connection.quote_column_name(col_name)})" : connection.quote_column_name(col_name)) + option_strings[col_name]
+                  [col_name, (caseable_columns.include?(col_name.to_s) ?
+                    "LOWER(#{connection.quote_column_name(col_name)})" : connection.quote_column_name(col_name))]
                 end
+                quoted_columns = Hash[quoted_column_names]
               else
-                quoted_column_names = column_names.map { |col_name| connection.quote_column_name(col_name) + option_strings[col_name] }
+                quoted_columns = Hash[column_names.map { |col_name| [col_name, connection.quote_column_name(col_name)] }]
               end
 
-              env.sql.columns = quoted_column_names.join(', ')
+              (operator_classes||{}).stringify_keys.each do |column, opclass|
+                quoted_columns[column] += " #{opclass}" if opclass and column.present?
+              end
+              quoted_columns = connection.send :add_index_sort_order, quoted_columns, **options
+
+              env.sql.columns = quoted_columns.values.join(', ')
             end
 
             if expression
