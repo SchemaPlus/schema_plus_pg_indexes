@@ -1,7 +1,7 @@
 [![Gem Version](https://badge.fury.io/rb/schema_plus_pg_indexes.svg)](http://badge.fury.io/rb/schema_plus_pg_indexes)
 [![Build Status](https://secure.travis-ci.org/SchemaPlus/schema_plus_pg_indexes.svg)](http://travis-ci.org/SchemaPlus/schema_plus_pg_indexes)
 [![Coverage Status](https://img.shields.io/coveralls/SchemaPlus/schema_plus_pg_indexes.svg)](https://coveralls.io/r/SchemaPlus/schema_plus_pg_indexes)
-[![Dependency Status](https://gemnasium.com/lomba/schema_plus_pg_indexes.svg)](https://gemnasium.com/SchemaPlus/schema_plus_pg_indexes)
+[![Dependency Status](https://gemnasium.com/SchemaPlus/schema_plus_pg_indexes.svg)](https://gemnasium.com/SchemaPlus/schema_plus_pg_indexes)
 
 # schema_plus_pg_indexes
 
