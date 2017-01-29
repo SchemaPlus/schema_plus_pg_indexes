@@ -3,7 +3,7 @@ module SchemaPlusPgIndexes
     module ConnectionAdapters
       module PostgresqlAdapter
         #
-        # SchemaPlusPgIndexes allows the column_names paramter
+        # SchemaPlusPgIndexes allows the column_names parameter
         # to be left off
         #
         def add_index(table_name, column_names, options={})
