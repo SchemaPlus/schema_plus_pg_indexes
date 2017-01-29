@@ -61,7 +61,8 @@ schema_plus_pg_indexes is tested on
 
 ## History
 
-* v0.2.0  - Support Rails 5 (Removed Rails 4.2 support)
+* v0.2.1  - Added Rails 5.0.1 support (Removed Rails 5.0.0 support)
+* v0.2.0  - Added Rails 5 support (Removed Rails 4.2 support)
 * v0.1.12 - Missing require
 * v0.1.11 - Explicit gem dependencies
 * v0.1.10 - Upgrade to schmea_plus_core 1.0
