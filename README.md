@@ -60,7 +60,7 @@ schema_plus_pg_indexes is tested on
 
 <!-- SCHEMA_DEV: MATRIX - end -->
 
-## History
+## Release Notes
 
 * v0.2.1  - Added Rails 5.0.1 support (Removed Rails 5.0.0 support)
 * v0.2.0  - Added Rails 5 support (Removed Rails 4.2 support)
