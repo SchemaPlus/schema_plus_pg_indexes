@@ -82,13 +82,13 @@ describe "Schema dump" do
 
     it "should define expression" do
       with_index Post, :name => "posts_freaky_index", :expression => "USING hash (least(id, user_id))" do
-        expect(dump_posts).to include(%q{t.index [], :name=>"posts_freaky_index", :using=>:hash, :expression=>"LEAST(id, user_id)"})
+        expect(dump_posts).to match(/t.index \[\], :name=>"posts_freaky_index", :using=>:hash, :expression=>"LEAST\(id, (user_id|\(user_id\)::bigint)\)"/) # after AR 5.1 ::bigint is appended
       end
     end
 
     it "should define multi-column with expression" do
       with_index Post, :body, :expression => "(least(id, user_id))" do
-        expect(dump_posts).to match(/body.*index.*:expression=>"LEAST\(id, user_id\)"/)
+        expect(dump_posts).to match(/body.*index.*:expression=>"LEAST\(id, (user_id|\(user_id\)::bigint)\)"/) # after AR 5.1 ::bigint is appended
       end
     end
 
