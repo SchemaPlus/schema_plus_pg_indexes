@@ -93,9 +93,16 @@ module SchemaPlusPgIndexes
               ]
               operator_classes.delete_if{|k,v| v.nil?}
 
-              # add info on sort order for columns (only desc order is explicitly specified, asc is the default)
-              desc_order_columns = inddef.scan(/(\w+) DESC/).flatten
-              orders = desc_order_columns.any? ? Hash[column_names.map {|column| [column, desc_order_columns.include?(column) ? :desc : :asc]}] : {}
+              orders = {}
+              order_clause = inddef[/\((\w+[^)]+)\)\z/, 1]
+              if order_clause && (using.downcase == "btree")
+                order_clause.split(/,\s+/).each do |order_by_column|
+                  match = /\A(\w+)\s*(.+)?\z/.match(order_by_column)
+                  column, order = match[1], match[2] || 'asc'
+                  order = order.downcase.to_sym if order && order =~ /\A(desc|asc)\z/i
+                  orders[column] = order
+                end
+              end
 
               ::ActiveRecord::ConnectionAdapters::IndexDefinition.new(env.table_name, column_names,
                                                                       :name => index_name,
