@@ -130,6 +130,33 @@ describe "Schema dump" do
       end
     end
 
+    it "should define index with order" do
+      with_index Post, [:str_short], order: 'desc' do
+        potential_lines = dump_posts.each_line.grep(/str_short/).join.strip
+        expect(potential_lines).to match(/t\.string\s+"str_short",\s+:index=>{:name=>"index_posts_on_str_short", :order=>{.*str_short.*=>:desc}}/)
+      end
+    end
+
+    it "should define index with order for multiple columns" do
+      with_index Post, [:str_short, :string_no_default], order: { str_short: :desc, string_no_default: :asc } do
+        potential_lines = dump_posts.each_line.grep(/str_short/).join.strip
+        expect(potential_lines).to match(/t\.string\s+"str_short",\s+:index=>{[^}]+:order=>{.*str_short.*=>:desc, .*string_no_default.*=>:asc}}/)
+      end
+    end
+
+    it "should define index with order with NULLS specified" do
+      with_index Post, [:str_short], order: 'desc NULLS LAST' do
+        potential_lines = dump_posts.each_line.grep(/str_short/).join.strip
+        expect(potential_lines).to match(/t\.string\s+"str_short",\s+:index=>{[^}]+:order=>{.*str_short.*=>"DESC NULLS LAST"}}/)
+      end
+    end
+
+    it "should define index with order with NULLS specified for multiple columns" do
+      with_index Post, [:str_short, :string_no_default], order: { str_short: 'desc NULLS LAST', string_no_default: :desc } do
+        potential_lines = dump_posts.each_line.grep(/str_short/).join.strip
+        expect(potential_lines).to match(/t\.string\s+"str_short",\s+:index=>{[^}]+:order=>{.*str_short.*=>"DESC NULLS LAST", .*string_no_default.*=>:desc}}/)
+      end
+    end
 
     it "should not define :case_sensitive => false with non-trivial expression" do
       with_index Post, :name => "posts_user_body_index", :expression => "BTRIM(LOWER(body))" do
