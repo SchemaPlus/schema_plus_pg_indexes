@@ -62,6 +62,7 @@ schema_plus_pg_indexes is tested on
 
 ## Release Notes
 
+* v0.3.1  - Bug fix: schema dump for complex order clause (#19).  Thanks to [@joxxoxo](https://github.com/joxxoxo).
 * v0.3.0  - Added Rails 5.1.0 support
 * v0.2.1  - Added Rails 5.0.1 support (Removed Rails 5.0.0 support)
 * v0.2.0  - Added Rails 5 support (Removed Rails 4.2 support)
