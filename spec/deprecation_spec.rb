@@ -24,6 +24,15 @@ describe 'Deprecations' do
       index = User.indexes.first
       expect(index.using).to eq using
     end
+
+    it "deprecates :expression", rails_5_2: :only do
+      field = 'date(login_at)'
+      expect(ActiveSupport::Deprecation).to receive(:warn).with(/expression.*simply/)
+      # type is here only for the tests, not a real option
+      create_table User, :login_at => { type: :datetime, index: { expression: field } }
+      index = User.indexes.first
+      expect(index.columns).to include field
+    end
   end
 
   context "on IndexDefinition object" do
@@ -45,6 +54,17 @@ describe 'Deprecations' do
       expect(index.using).to eq using # sanity check
       expect(index.kind).to eq using.to_s
     end
+
+    it "deprecates #expression", rails_5_2: :only do
+      field = 'date(login_at)'
+      # type is here only for the tests, not a real option
+      create_table User, :login_at => { type: :datetime }
+      migration.add_index User.table_name, field, name: 'index_login_date'
+      index = User.indexes.first
+      expect(ActiveSupport::Deprecation).to receive(:warn).with(/expression.*simply/)
+      expect(index.columns).to include field # sanity check
+      expect(index.expression).to be_nil
+    end
   end
 
   protected
@@ -53,7 +73,8 @@ describe 'Deprecations' do
     migration.suppress_messages do
       migration.create_table model.table_name, :force => true do |t|
         columns_with_options.each_pair do |column, options|
-          t.send :string, column, options
+          type = options.delete(:type) || :string
+          t.send type, column, options
         end
       end
       model.reset_column_information

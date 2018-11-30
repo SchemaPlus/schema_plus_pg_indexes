@@ -1,7 +1,7 @@
 
 require 'spec_helper'
 
-describe "schema" do
+describe "schema", rails_5_2: :skip do
 
   class User < ::ActiveRecord::Base ; end
 

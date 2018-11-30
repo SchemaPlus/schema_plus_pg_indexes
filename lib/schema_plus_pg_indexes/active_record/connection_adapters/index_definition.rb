@@ -3,7 +3,7 @@ module SchemaPlusPgIndexes
     module ConnectionAdapters
       #
       # SchemaPlusPgIndexes extends the IndexDefinition object to return information
-      # case sensitivity, expessions, and operator classes
+      # case sensitivity, expressions, and operator classes
       module IndexDefinition
 
         attr_accessor :expression

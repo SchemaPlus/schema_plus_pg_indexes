@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'stringio'
 
-describe "Schema dump" do
+describe "Schema dump", rails_5_2: :skip do
 
   before(:each) do
     ActiveRecord::Migration.suppress_messages do

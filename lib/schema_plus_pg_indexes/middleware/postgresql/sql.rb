@@ -14,7 +14,7 @@ module SchemaPlusPgIndexes
           # The <tt>:case_sensitive => false</tt> option ties in with Rails built-in support for case-insensitive searching:
           #    validates_uniqueness_of :name, :case_sensitive => false
           #
-          # Since since <tt>:case_sensitive => false</tt> is implemented by
+          # Since <tt>:case_sensitive => false</tt> is implemented by
           # using <tt>:expression</tt>, this raises an ArgumentError if both
           # are specified simultaneously.
           #

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 
-describe "Index definition" do
+describe "Index definition", rails_5_2: :skip do
 
   let(:migration) { ::ActiveRecord::Migration }
 

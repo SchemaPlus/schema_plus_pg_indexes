@@ -16,6 +16,11 @@ Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
   config.include(SchemaPlusPgIndexesMatchers)
+  if Gem::Version.new(ActiveRecord::VERSION::STRING) >= Gem::Version.new('5.2.0')
+    config.filter_run_excluding rails_5_2: :skip
+  else
+    config.filter_run_excluding rails_5_2: :only
+  end
   config.warnings = true
   config.around(:each) do |example|
     ActiveRecord::Migration.suppress_messages do

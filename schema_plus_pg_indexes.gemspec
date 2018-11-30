@@ -17,7 +17,16 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency "activerecord", "~> 5.0", ">= 5.0.1"
+  gem.post_install_message = <<EOF
+ActiveRecord 5.2 supports all of the functionality provided by Schema+ PG Indexes (expression indexes,
+operator classes, case insensitive indexes).
+Thus this gem is now deprecated and will not be maintained for future ActiveRecord versions.
+The rest of Schema+, however, is still being maintained.
+
+Please see the README.md for more information on migrating your old migrations to AR 5.2 syntax so you can remove this gem.
+EOF
+
+  gem.add_dependency "activerecord", ">= 5.0.1", "< 5.3"
   gem.add_dependency "schema_plus_indexes", "~> 0.2", ">= 0.2.4"
   gem.add_dependency "schema_plus_core", "~> 2.0"
   gem.add_dependency "its-it", "~> 1.2"
