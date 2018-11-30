@@ -24,7 +24,7 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency "bundler", "~> 1.7"
   gem.add_development_dependency "rake", "~> 10.0"
-  gem.add_development_dependency "rspec", "~> 3.0.0"
+  gem.add_development_dependency "rspec", "~> 3.0"
   gem.add_development_dependency "schema_dev", "~> 3.8"
   gem.add_development_dependency "simplecov"
   gem.add_development_dependency "simplecov-gem-profile"
