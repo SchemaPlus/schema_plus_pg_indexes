@@ -21,7 +21,7 @@ describe "index" do
     end
   end
 
-  fcontext 'rails 5.2 or newer', rails_5_2: :only do
+  context 'rails 5.2 or newer', rails_5_2: :only do
     it "should handle old arguments" do
       add_index(:users, 'upper(login)', using: :hash, where: 'deleted_at is null', opclass: 'varchar_pattern_ops', :name => 'users_login_index')
       index = User.indexes.first
